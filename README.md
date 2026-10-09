@@ -4,9 +4,16 @@
 
 Спасибо, Claude Sonnet 5.5 Medium
 
+<img width="1620" height="922" alt="image" src="https://github.com/user-attachments/assets/27967460-f068-4270-9122-f8790a4bff2e" />
+
+
 ## 1. Назначение и возможности
 
 Timeline Viewer открывается в браузере и разбирает выгрузки Google Timeline (и треки KML) прямо на вашем компьютере. Файлы никуда не отправляются: вся обработка идёт локально в браузере. Из сети загружаются только тайлы (картинки) подложки карты.
+
+
+<img width="1620" height="922" alt="image" src="https://github.com/user-attachments/assets/0647da5c-d550-4d7c-91aa-0553b76f9702" />
+
 
 **Что умеет программа:**
 
