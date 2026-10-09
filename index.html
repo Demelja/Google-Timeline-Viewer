@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Timeline Viewer</title>
+
+  <!--
+    Применяем тему синхронно, до применения стилей, чтобы избежать
+    мигания "не той" темой при загрузке. Логика намеренно продублирована
+    (в сокращённом виде) из UI.initTheme в js/ui.js — обычная практика для
+    anti-FOUC-скриптов, которые обязаны быть синхронными и inline.
+  -->
+  <script>
+    (function () {
+      try {
+        var stored = localStorage.getItem('tlv3.theme');
+        var theme = stored === 'light' || stored === 'dark'
+          ? stored
+          : (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.dataset.theme = theme;
+      } catch (e) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
+
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <div class="app-shell">
+
+    <!-- ===================== HEADER ===================== -->
+    <header class="topbar">
+      <div class="topbar-brand">
+        <span class="brand-mark">◈</span>
+        <div class="brand-text">
+          <span class="brand-name" id="brand-name">Timeline Viewer</span>
+          <span class="brand-version" id="brand-version">автономный анализ Google Timeline</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div id="status-bar" class="status-bar hidden"></div>
+        <button id="theme-toggle" class="theme-toggle" type="button" title="Переключить тему" aria-label="Переключить светлую/тёмную тему">
+          <span class="theme-toggle-icon">☾</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ===================== BODY ===================== -->
+    <div class="app-body">
+
+      <!-- ------------- SIDEBAR ------------- -->
+      <aside class="sidebar">
+
+        <section class="panel" id="upload-panel">
+          <div class="dropzone" id="dropzone">
+            <div class="dropzone-icon">⇪</div>
+            <p class="dropzone-title">Перетащите файл(ы) Timeline</p>
+            <p class="dropzone-sub">Timeline.json · Records.json · .kml · или выберите вручную</p>
+            <input type="file" id="file-input" accept="application/json,.json,.kml,application/vnd.google-earth.kml+xml" multiple hidden />
+          </div>
+        </section>
+
+        <section class="panel" id="layers-panel">
+          <h2 class="panel-title">Слои карты</h2>
+          <label class="switch-row" id="heatmap-row" for="heatmap-toggle" title="Показывает, где вы проводили больше всего времени. Учитывает активные фильтры.">
+            <input type="checkbox" id="heatmap-toggle" class="switch-input" />
+            <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
+            <span class="switch-label">Тепловая карта мест пребывания</span>
+          </label>
+        </section>
+
+        <section class="panel">
+          <h2 class="panel-title">Фильтры</h2>
+
+          <div class="filter-block">
+            <label class="field-label">Период</label>
+            <div class="date-range">
+              <input type="date" id="date-from" />
+              <span class="date-sep">—</span>
+              <input type="date" id="date-to" />
+            </div>
+          </div>
+
+          <div class="filter-block">
+            <label class="field-label">Типы активности</label>
+            <div id="activity-filters" class="activity-filters">
+              <p class="muted">Загрузите файл, чтобы увидеть типы</p>
+            </div>
+          </div>
+
+          <button id="reset-filters" class="btn-reset">Сбросить фильтры</button>
+        </section>
+
+        <section class="panel" id="stats-section">
+          <h2 class="panel-title">Статистика</h2>
+          <div id="stats-panel" class="stats-panel">
+            <p class="muted">Данные появятся после загрузки файла</p>
+          </div>
+        </section>
+
+        <section class="panel" id="places-section">
+          <h2 class="panel-title">Часто посещаемые места</h2>
+          <div id="places-list" class="places-list"></div>
+        </section>
+
+      </aside>
+
+      <!-- ------------- MAP ------------- -->
+      <main class="map-wrap">
+        <div id="map"></div>
+        <div id="loading-overlay" class="loading-overlay hidden">Обработка...</div>
+      </main>
+
+    </div>
+  </div>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="vendor/leaflet-heat/leaflet-heat.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
